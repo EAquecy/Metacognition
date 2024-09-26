@@ -8,33 +8,27 @@ st.set_page_config(page_title="Metacognition Assistant",
                    layout="wide",
                    page_icon="")
 
-# getting the working directory of the main.py
-working_dir = os.path.dirname(os.path.abspath(__file__))
-
 # loading the saved models
-
 metacognition_model = pickle.load(open('metacognition_model.sav', 'rb'))
-
 
 # navbar for navigation
 selected = option_menu('Metacognitive Assistant',
-                        ["Instructions",'Page 1', 'Page 2','Result'],
-                        menu_icon='open_book:',
-                        icons=['info-circle','person-fill','person-fill-add','pc-display-horizontal'],
-                        default_index=0,
-                        orientation="horizontal",)
+                       ["Instructions", 'Page 1', 'Page 2', 'Result'],
+                       menu_icon='open_book:',
+                       icons=['info-circle', 'person-fill', 'person-fill-add', 'pc-display-horizontal'],
+                       default_index=0,
+                       orientation="horizontal", )
 
 if selected == 'Instructions':
-    # instructions
     st.write("""
+        For Gender, please enter 0 for male and 1 for female. For Age, enter 0 if you are between 17 and 20 years old, 
+        1 if you are between 21 and 24 years old, and 3 if you are 25 years or older.
 
-                              For Gender, please enter 0 for male and 1 for female. For Age, enter 0 if you are between 17 and 20 years old, 1 if you are between 21 and 24 years old, and 3 if you are 25 years or older.
-
-                              For the remaining characteristics, rate each on a scale from 1 to 5, where 1 represents Strongly Disagree, 2 represents Disagree, 3 represents Neutral, 4 represents Agree, and 5 represents Strongly Agree. 
+        For the remaining characteristics, rate each on a scale from 1 to 5, where 1 represents Strongly Disagree, 
+        2 represents Disagree, 3 represents Neutral, 4 represents Agree, and 5 represents Strongly Agree.
     """)
 
 if selected == 'Page 1':
-
     # getting the input data from the user
     col1, col2, col3 = st.columns(3)
 
@@ -43,7 +37,6 @@ if selected == 'Page 1':
 
         # Map "M" to 0 and "F" to 1
         Gender = 0 if Gender_input == 'M' else 1
-
         st.write(f'Gender mapped to: {Gender}')
 
     with col2:
@@ -56,7 +49,6 @@ if selected == 'Page 1':
             Age = 1
         else:  # '25 or older'
             Age = 2
-
         st.write(f'Age mapped to: {Age}')
 
     with col3:
@@ -82,9 +74,9 @@ if selected == 'Page 1':
         planner = st.selectbox('You enjoy planning and incorporate both writing and speaking in your study routines.',
                                options=[1, 2, 3, 4, 5])
 
-    #storing the data
-    st.session_state['Gender_input'] = Gender_input
-    st.session_state['Age_input'] = Age_input
+    # storing the data
+    st.session_state['Gender'] = Gender
+    st.session_state['Age'] = Age
     st.session_state['auditoryLearner'] = auditoryLearner
     st.session_state['collaborativeLearner'] = collaborativeLearner
     st.session_state['visualLearner'] = visualLearner
@@ -124,34 +116,30 @@ if selected == 'Page 2':
     st.session_state['linguisticAffinity'] = linguisticAffinity
     st.session_state['logicalThinker'] = logicalThinker
     st.session_state['hands_on_Learner'] = hands_on_Learner
-    st.session_state['collaborativeLearner'] = empathetic
+    st.session_state['empathetic'] = empathetic
     st.session_state['solitaryLearner'] = solitaryLearner
     st.session_state['socialLearner'] = socialLearner
 
 if selected == 'Result':
-    # code for Prediction
-    typeOfLearner = ''
-
-    # creating a button for Prediction
-
     if st.button('Type of Learner Result'):
+        # Retrieve stored values from session_state
+        Gender = st.session_state.get('Gender', 0.0)
+        Age = st.session_state.get('Age', 0.0)
+        auditoryLearner = st.session_state.get('auditoryLearner', 0.0)
+        collaborativeLearner = st.session_state.get('collaborativeLearner', 0.0)
+        visualLearner = st.session_state.get('visualLearner', 0.0)
+        focusedLearner = st.session_state.get('focusedLearner', 0.0)
+        planner = st.session_state.get('planner', 0.0)
+        linguisticAffinity = st.session_state.get('linguisticAffinity', 0.0)
+        logicalThinker = st.session_state.get('logicalThinker', 0.0)
+        hands_on_Learner = st.session_state.get('hands_on_Learner', 0.0)
+        empathetic = st.session_state.get('empathetic', 0.0)
+        solitaryLearner = st.session_state.get('solitaryLearner', 0.0)
+        socialLearner = st.session_state.get('socialLearner', 0.0)
 
-        Gender_input = st.session_state.get('Gender_input',0.0)
-        Age_input = st.session_state.get('Age_input',0.0)
-        auditoryLearner = st.session_state.get('auditoryLearner',0.0)
-        collaborativeLearner = st.session_state.get('collaborativeLearner',0.0)
-        visualLearner = st.session_state.get('visualLearner',0.0)
-        focusedLearner = st.session_state.get('focusedLearner',0.0)
-        planner = st.session_state.get('planner',0.0)
-        linguisticAffinity = st.session_state.get('linguisticAffinity',0.0)
-        logicalThinker = st.session_state.get('logicalThinker',0.0)
-        hands_on_Learner = st.session_state.get('hands_on_Learner',0.0)
-        empathetic = st.session_state.get('empathetic',0.0)
-        solitaryLearner = st.session_state.get('solitaryLearner',0.0)
-        socialLearner = st.session_state.get('socialLearner',0.0)
-
-        user_input = [Gender_input, Age_input, auditoryLearner, collaborativeLearner, visualLearner,
-                      focusedLearner, planner, linguisticAffinity,logicalThinker, hands_on_Learner,
+        # Combine user input into a list
+        user_input = [Gender, Age, auditoryLearner, collaborativeLearner, visualLearner,
+                      focusedLearner, planner, linguisticAffinity, logicalThinker, hands_on_Learner,
                       empathetic, solitaryLearner, socialLearner]
 
         user_input = [float(x) for x in user_input]
